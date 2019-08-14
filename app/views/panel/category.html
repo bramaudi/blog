@@ -1,0 +1,198 @@
+<div id="loop"></div>
+
+<script>
+
+/** ---------------- Form Submit ---------------- */
+let submitCreate = () => {
+	event.preventDefault()
+	m.render(result, m('div.loader', {style: 'margin-bottom: 35px'}));
+
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.category/create',
+		body: {
+			cors: 1,
+			name: nameInput.value,
+			slug: slugInput.value,
+			desc: descInput.value
+		}
+	})
+	.then(res =>
+	{
+		let notifClass = res.error == 1 ? 'error' : 'success';
+		m.render(result, m('div.notif '+notifClass, res.msg));
+		if (res.error == 0) getData();
+	})
+	.catch(e => console.log(e));
+
+}
+/** ---------------- */
+
+
+/** ---------------- Getting Data for Loop ---------------- */
+let getData = () =>
+{
+	m.render(loop, m('div.loader'));
+
+	m.request({
+		method: 'GET',
+		url: '/ajax.panel.category/list'
+	})
+	.then(res => {
+		let data = [];
+		
+		// Form Create
+		data.push(m('.subtitle', m('a', {onclick: () => getData()},'Categories')),
+			m('form', {onsubmit: () => submitCreate()}, [
+				m('.form-double', [
+					m('div', [
+						m('label[for=nameInput]', ['Name*: ', m('small', '(max. 20)')]),
+						m('input#nameInput', {placeholder: 'My Trip'})
+					]),
+					m('div', [
+						m('label[for=slugInput]', ['Slug: ', m('small', '(optional)')]),
+						m('input#slugInput', {placeholder: 'my-trip'})
+					])
+				]),
+				m('label[for=descInput]', ['Description: ', m('small', '(max. 255)')]),
+				m('textarea#descInput', {placeholder: 'The story about all of my trip in holiday.', rows: 3}),
+				m('button.button', 'Create'),
+				m('#result')
+			])
+		)
+
+		if (res.empty == 1) {
+			m.render(loop, m('div.notif.error', 'Empty'));
+			m.render(result, '');
+		} else {
+			res.data.map((item) => {
+				data.push(m('div.item', [
+					m('b', item.name),
+					' (', m('em', item.posts+' posts)'),
+					m('div', {style: 'padding-top: 5px'}, '"'+item.description+'"'),
+					m('a.button.button-slim.blue', {
+							onclick: () => createEditForm(item.id)
+						}, [m('span.fas.fa-edit'), ' Edit']),
+					m('a.button.button-slim.red', {
+						href: '#modal__'+item.id
+					}, [m('span.fas.fa-times'), ' Delete']),
+					m(createModal, {modalID: item.id})
+				]))
+				
+			});
+			m.render(loop, data)
+		}
+	})
+	.catch(e => console.log(e))
+
+}
+
+getData(1);
+/** ---------------- */
+
+
+/** ---------------- Create Modal ---------------- */
+let createModal = {
+
+	view: function(vnode) {
+		return	m('div.modal-window', { id: 'modal__'+vnode.attrs.modalID}, [
+			m('div', [
+				m('a.modal-close', {
+					href: '#',
+					title: 'Close'
+				}, m.trust('&times;')),
+				m('h1', 'Delete Category'),
+				m('div', 'Are you sure want to delete this category?'),
+				m('div', m('button.button.red', {
+					onclick: () => categoryDelete(vnode.attrs.modalID)
+				}, 'Yes, delete anyway!'))
+			])
+		]);
+	}
+	
+}
+/** ---------------- */
+
+
+/** ---------------- FUNC: Delete Category */
+let categoryDelete = (targetID) => {
+
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.category/delete',
+		body: {
+			cors: 1,
+			id: targetID
+		}
+	})
+	.then(res => {
+		console.log(res);
+		getData();
+	})
+	.catch(err => console.log(err))
+}
+/** ---------------- */
+
+
+
+
+let createEditForm = (categoryID) =>
+{
+	m.render(loop, m('.loader'))
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.category/select',
+		body: {
+			id: categoryID
+		}
+	})
+	.then(res => {
+		
+		m.render(loop, [
+			m('.subtitle', [m('a', {onclick: () => getData()}, 'Categories'), m.trust(' &raquo; Edit')]),
+			m('form', {onsubmit: () => submitEdit(categoryID)}, [
+				m('.form-double', [
+					m('div', [
+						m('label[for=nameInput]', ['Name*: ', m('small', '(max. 20)')]),
+						m('input#nameInput', {placeholder: 'My Trip', value: res.data[0].name})
+					]),
+					m('div', [
+						m('label[for=slugInput]', ['Slug: ', m('small', '(optional)')]),
+						m('input#slugInput', {placeholder: 'my-trip', value: res.data[0].slug})
+					])
+				]),
+				m('label[for=descInput]', ['Description: ', m('small', '(max. 255)')]),
+				m('textarea#descInput', {placeholder: 'The story about all of my trip in holiday.', rows: 3}, res.data[0].description),
+				m('button.button', 'Save'), ' ',
+				m('a.button.blue', {onclick: () => getData()}, 'Back'),
+				m('#result')
+			])
+		])
+	})
+}
+
+let submitEdit = (categoryID) => {
+
+	event.preventDefault()
+	m.render(result, m('div.loader', {style: 'margin-bottom: 35px'}));
+
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.category/edit',
+		body: {
+			cors: 1,
+			id: categoryID,
+			name: nameInput.value,
+			slug: slugInput.value,
+			desc: descInput.value
+		}
+	})
+	.then(res =>
+	{
+		let notifClass = res.error == 1 ? 'error' : 'success';
+		m.render(result, m('div.notif '+notifClass, res.msg));
+	})
+	.catch(e => console.log(e));
+
+}
+</script>

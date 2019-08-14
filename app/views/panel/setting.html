@@ -1,0 +1,89 @@
+<form id="form">
+	<div class="subtitle">Settings</div>
+	
+	<label for="blog_name">Blog Name: (20)</label>
+	<input type="text" id="blog_name" value="{$name}">
+	
+	<label for="blog_keywords">Keywords: (255)</label>
+	<textarea id="blog_keywords" cols="3">{$keywords}</textarea>
+	
+	<label for="blog_desc">Description: (255)</label>
+	<textarea id="blog_desc" cols="3">{$description}</textarea>
+	
+	<label for="per_page">Post per page:</label>
+	<input type="number" id="per_page" value="{$per_page}">
+	
+	<label>Open Comments:</label>
+	<input type="checkbox" id="open_comment" value="{$open_comment}"> <label class="clear" for="open_comment" id="tip3"></label>
+	
+	<label>Comment Moderation:</label>
+	<input type="checkbox" id="comment_moderation" value="{$comment_moderation}"> <label class="clear" for="comment_moderation" id="tip1"></label>
+	
+	<label>Open Registration:</label>
+	<input type="checkbox" id="open_register" value="{$open_register}"> <label class="clear" for="open_register" id="tip2"></label>
+	
+	<div id="result"></div>
+	
+	<button class="button">Save changes</button>
+</form>
+
+<script>
+open_register.checked = open_register.value == 1 ? 1 : 0
+open_reg_true = 'Allow guest to create an account.'
+open_reg_false = 'Guest can`t register account.'
+
+m.render(tip2, open_register.checked ? open_reg_true: open_reg_false)
+open_register.onclick = (e) => {
+	e.target.value = e.target.checked ? 1: 0
+	m.render(tip2, e.target.checked ? open_reg_true: open_reg_false)
+}
+
+/**/
+
+comment_moderation.checked = comment_moderation.value == 1 ? 1 : 0
+comment_mod_true = 'All comments need approvement before publishing.'
+comment_mod_false = 'All comments will published witout moderation.'
+
+m.render(tip1, comment_moderation.checked ? comment_mod_true: comment_mod_false)
+comment_moderation.onclick = (e) => {
+	e.target.value = e.target.checked ? 1: 0
+	m.render(tip1, e.target.checked ? comment_mod_true: comment_mod_false)
+}
+
+/**/
+
+open_comment.checked = open_comment.value == 1 ? 1 : 0
+open_comment_true = 'Anyone can comments on your site..'
+open_comment_false = 'Only member can comments on your site.'
+
+m.render(tip3, open_comment.checked ? open_comment_true: open_comment_false)
+open_comment.onclick = (e) => {
+	e.target.value = e.target.checked ? 1: 0
+	m.render(tip3, e.target.checked ? open_comment_true: open_comment_false)
+}
+
+/**/
+
+form.onsubmit = (e) => {
+	e.preventDefault()
+	m.render(result, m('div.loader'))
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.setting',
+		body: {
+			cors: 1,
+			blog_name: blog_name.value,
+			blog_keywords: blog_keywords.value,
+			blog_desc: blog_desc.value,
+			per_page: per_page.value,
+			comment_moderation: comment_moderation.value,
+			open_register: open_register.value,
+			open_comment: open_comment.value
+		}
+	})
+	.then(res => {
+		let classRltf = res.error == 1 ? '.error': '.success'
+		m.render(result, m('div.notif'+classRltf, res.msg))
+	})
+}
+</script>

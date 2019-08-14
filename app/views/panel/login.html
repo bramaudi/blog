@@ -1,0 +1,45 @@
+<form id="form" class="full">
+		<label for="user">Username:</label>
+		<input type="text" id="userInput">
+		<label for="pass">Password:</label>
+		<input type="password" id="passInput">
+		<br>
+		<input type="checkbox" id="remember">
+		<label class="clear" for="remember"> Remember me</label> <br>
+		<button class="button"><span class="fas fa-sign-in-alt"></span> Login</button>
+		&nbsp; Dont have account? <a href="/panel/register">Register</a>
+		<div id="result"></div>
+	</form>
+	
+	
+	<script>
+	// Mithril Request
+	form.onsubmit = () => {
+	
+		m.render(result, m('div.loader'))
+		
+		m.request({
+			method: 'POST',
+			url: '/ajax.panel.user/login',
+			body: {
+				user: userInput.value,
+				pass: passInput.value,
+				remember: remember.checked ? 1 : 0
+			}
+		})
+		.then(res =>
+		{
+			let notifClass = res.error == 1 ? 'error' : 'success'
+	
+			
+			m.render(result, [
+				m('div.notif '+notifClass, m.trust(res.msg))
+			])
+	
+			if (res.error == 0) window.location.href = '/panel'
+		})
+		.catch(e => console.log(e))
+	
+		return false
+	}
+	</script>

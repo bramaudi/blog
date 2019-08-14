@@ -1,0 +1,22 @@
+<li class="categories">Kategori<ul>	<li class="cat-item cat-item-2"><a href="/category/uncategorized">Uncategorized</a>
+</li>
+</ul></li>
+<footer>
+Template <b>Bujank Pekok</b> Design <br>
+Created by <a href="//fb.me/bramaudi">Brama Udi</a>
+</footer>
+
+<script>
+function toggle(id){
+	var el = document.getElementById(id);
+	el.classList.toggle('hide');
+}
+search_form.onsubmit = (e) => {
+	e.preventDefault()
+	if (search_query.value !== '') {
+		window.location.href = '/search/'+search_query.value
+	}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,634 @@
+<div id="loop"></div>
+
+<script>
+let getData = () => {
+	m.render(loop, m('div.loader'))
+	m.request({
+		method: 'GET',
+		url: '/ajax.panel.mod/list'
+	})
+	.then(res => {
+		if (res.count == 0)
+		{
+			m.render(loop, m('div.notif.error', 'Empty'))
+
+		} else {
+
+			data = []
+
+			// Create button
+			data.push([
+				m('.subtitle', m('a', {onclick: () => getData()}, 'Role')),
+				
+				m('a.button', {onclick: () => buildCreateForm()}, [
+					m('span.fas.fa-plus'), ' Create'
+				])
+			])
+
+			res.data.map(item => {
+				data.push(m('div.item', [
+					m('b', item.name),
+					m('em', ' ( ID: '+item.id+' )'),
+					m('div', item.users+' users'),
+					m('div.inline-panel', [
+						m('a.button.button-slim.blue', {
+							onclick: () => buildEditForm(item.id)
+						}, [m('span.fas.fa-edit'),' Edit']),
+						m('a.button.button-slim.red', {
+							href: '#modal__'+item.id
+						}, [m('span.fas.fa-times'),' Delete']),
+						m('a.button.button-slim', {
+							onclick: () => {
+								getRole(item.id)
+							}
+						}, [m('span.fas.fa-lock'),' Detail']),
+						m(createModal, {modalID: item.id})
+					])
+					
+				]))
+			})
+
+			m.render(loop, data)
+		}
+	})
+}
+
+getData()
+
+let modDelete = (param) => {
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.mod/delete',
+		body: {
+			cors: 1,
+			id: param
+		}
+	})
+	.then(res => console.log(res))
+	getData()
+}
+
+let createModal = {
+
+view: function(vnode) {
+	return	m('div.modal-window', { id: 'modal__'+vnode.attrs.modalID}, [
+		m('div', [
+			m('a.modal-close', {
+				href: '#',
+				title: 'Close'
+			}, m.trust('&times;')),
+			m('h1', 'Delete Profile'),
+			m('div', 'Are you sure want to delete this permission profile?'),
+			m('div', m('button.button.red', {
+				onclick: () => {
+					modDelete(vnode.attrs.modalID)
+				}
+			}, 'Yes, delete anyway!'))
+		])
+	]);
+}
+
+}
+
+
+
+let getRole = (anjay) => {
+
+m.render(loop, m('div.loader'))
+m.request({
+	method: 'POST',
+	url: '/ajax.panel.mod/select',
+	body: {
+		cors: 1,
+		id: anjay
+	}
+})
+.then(item => {	
+	item = item.data
+	m.render(loop, [
+		m('.subtitle', [
+			m('a', {onclick: () => getData()}, 'Role'),
+			m.trust(' &raquo; Detail '),
+			m('b', item.name)
+		]),
+
+		m('div', {style: 'margin: -5px 0 5px 0'}, [
+			m('button.button.button-slim', {
+				onclick: () => getData()
+			}, [m('span.fas.fa-chevron-left'), ' Back']),
+		]),
+
+		m('div', {style: 'margin: 10px 0'}, [
+			m('b', 'Description: '), m('br'), item.description
+		]),		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.post_create,
+				disabled: true
+			})
+		], 'Post (Create)'),
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.post_edit,
+				disabled: true
+			})
+		], 'Post (Edit)'),
+
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.post_delete,
+				disabled: true
+			})
+		], 'Post (Delete)'),
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.comment_edit,
+				disabled: true
+			})
+		], 'Comments (Edit)'),
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.comment_delete,
+				disabled: true
+			})
+		], 'Comments (Delete)'),
+		
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.comment_approve,
+				disabled: true
+			})
+		], 'Comments (Approve)'),
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.category_create,
+				disabled: true
+			})
+		], 'Category (Create)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.category_edit,
+				disabled: true
+			})
+		], 'Category (Edit)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.category_delete,
+				disabled: true
+			})
+		], 'Category (Delete)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.file_create,
+				disabled: true
+			})
+		], 'File (Upload)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.file_edit,
+				disabled: true
+			})
+		], 'File (Edit)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.file_delete,
+				disabled: true
+			})
+		], 'File (Delete)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.gallery_create,
+				disabled: true
+			})
+		], 'Gallery (Upload)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.gallery_edit,
+				disabled: true
+			})
+		], 'Gallery (Edit)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.gallery_delete,
+				disabled: true
+			})
+		], 'Gallery (Delete)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.user_create,
+				disabled: true
+			})
+		], 'User (Create)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.user_edit,
+				disabled: true
+			})
+		], 'User (Edit)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.user_delete,
+				disabled: true
+			})
+		], 'User (Delete)'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.setting,
+				disabled: true
+			})
+		], 'Blog Setting'),
+		
+
+		m('div', [
+			m('input[type=checkbox]', {
+				checked: +item.mod,
+				disabled: true
+			})
+		], 'Manage Permission (mod)')
+	])
+})
+}
+
+
+
+
+
+let buildCreateForm = () => {
+
+m.render(loop, [
+
+	m('.subtitle', [
+		m('a', {onclick: () => getData()}, 'Role'),
+		m.trust(' &raquo; Create')
+	]),
+
+	m('form', {onsubmit: () => submitCreate()},
+	[
+		m('label[for=inputName]', 'Name*: (max. 20)'),
+		m('input#inputName', {placeholder: 'Writter'}),
+
+		m('label[for=inputDesc]', 'Description:'),
+		m('textarea#inputDesc', {placeholder: 'Only write post.', rows: 3}),
+
+		m('label', 'Permissions:'),
+
+		m('div', [
+			m('input[type=checkbox]#inputPostCreate'),
+			m('label[for=inputPostCreate].clear', 'Post (Create)'),
+			m('br'),
+			m('input[type=checkbox]#inputPostEdit'),
+			m('label[for=inputPostEdit].clear', 'Post (Edit)'),
+			m('br'),
+			m('input[type=checkbox]#inputPostDelete'),
+			m('label[for=inputPostDelete].clear', 'Post (Delete)'),
+		]),
+
+		m('br'),
+
+		m('div', [
+			m('input[type=checkbox]#inputCommentEdit'),
+			m('label[for=inputCommentEdit].clear', 'Comment (Edit)'),
+			m('br'),
+			m('input[type=checkbox]#inputCommentDelete'),
+			m('label[for=inputCommentDelete].clear', 'Comment (Delete)'),
+			m('br'),
+			m('input[type=checkbox]#inputCommentApprove'),
+			m('label[for=inputCommentApprove].clear', 'Comment (Approve)'),
+		]),
+
+		m('br'),
+
+		m('div', [
+			m('input[type=checkbox]#inputCategoryCreate'),
+			m('label[for=inputCategoryCreate].clear', 'Category (Create)'),
+			m('br'),
+			m('input[type=checkbox]#inputCategoryEdit'),
+			m('label[for=inputCategoryEdit].clear', 'Category (Edit)'),
+			m('br'),
+			m('input[type=checkbox]#inputCategoryDelete'),
+			m('label[for=inputCategoryDelete].clear', 'Category (Delete)'),
+		]),
+
+		m('br'),
+
+		m('div', [
+			m('input[type=checkbox]#inputFileCreate'),
+			m('label[for=inputFileCreate].clear', 'File (Upload)'),
+			m('br'),
+			m('input[type=checkbox]#inputFileEdit'),
+			m('label[for=inputFileEdit].clear', 'File (Edit)'),
+			m('br'),
+			m('input[type=checkbox]#inputFileDelete'),
+			m('label[for=inputFileDelete].clear', 'File (Delete)'),
+		]),
+
+		m('br'),
+
+		m('div', [
+			m('input[type=checkbox]#inputGalleryCreate'),
+			m('label[for=inputGalleryCreate].clear', 'Gallery (Upload)'),
+			m('br'),
+			m('input[type=checkbox]#inputGalleryEdit'),
+			m('label[for=inputGalleryEdit].clear', 'Gallery (Edit)'),
+			m('br'),
+			m('input[type=checkbox]#inputGalleryDelete'),
+			m('label[for=inputGalleryDelete].clear', 'Gallery (Delete)'),
+		]),
+
+		m('br'),
+
+		m('div', [
+			m('input[type=checkbox]#inputUserCreate'),
+			m('label[for=inputUserCreate].clear', 'User (Create)'),
+			m('br'),
+			m('input[type=checkbox]#inputUserEdit'),
+			m('label[for=inputUserEdit].clear', 'User (Edit)'),
+			m('br'),
+			m('input[type=checkbox]#inputUserDelete'),
+			m('label[for=inputUserDelete].clear', 'User (Delete)'),
+		]),
+
+		m('br'),
+
+		m('div', [
+			m('input[type=checkbox]#inputSetting'),
+			m('label[for=inputSetting].clear', 'Edit Setting'),
+			m('br'),
+			m('input[type=checkbox]#inputMod'),
+			m('label[for=inputMod].clear', 'Role Management'),
+		]),
+
+		m('#result'),
+		m('button.button', 'Create'), ' ',
+		m('a.button.blue', {onclick: () => getData()}, 'Back')
+	])
+
+])
+
+let checkboxs = document.querySelectorAll('input[type=checkbox]')
+for (var i =0; i < checkboxs.length; i++) {
+	checkboxs[i].value = 0
+	checkboxs[i].onclick = (e) => {
+		e.target.value = e.target.checked === true ? 1: 0
+	}
+}
+
+} // buildCreateForm()
+
+
+let submitCreate = () => {
+	event.preventDefault()
+	m.render(result, m('div.loader'))
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.mod/create',
+		body: {
+			cors: 1,
+			name:				inputName.value,
+			description:		inputDesc.value,
+			post_create:		inputPostCreate.value,
+			post_edit:			inputPostEdit.value,
+			post_delete:		inputPostDelete.value,
+			comment_edit:		inputCommentEdit.value,
+			comment_delete:		inputCommentDelete.value,
+			comment_approve:	inputCommentApprove.value,
+			category_create:	inputCategoryCreate.value,
+			category_edit:		inputCategoryEdit.value,
+			category_delete:	inputCategoryDelete.value,
+			file_create:		inputFileCreate.value,
+			file_edit:			inputFileEdit.value,
+			file_delete:		inputFileDelete.value,
+			gallery_create:		inputGalleryCreate.value,
+			gallery_edit:		inputGalleryEdit.value,
+			gallery_delete:		inputGalleryDelete.value,
+			user_create:		inputUserCreate.value,
+			user_edit:			inputUserEdit.value,
+			user_delete:		inputUserDelete.value,
+			setting:			inputSetting.value,
+			mod:				inputMod.value
+		}
+	})
+	.then(res => {
+		if (res.error == 1)
+			m.render(result, m('div.notif.error', res.msg))
+		else
+			m.render(result, m('div.notif.success', res.msg))
+	})
+} // submitCreate()
+
+
+
+
+
+let buildEditForm = (targetID) => {
+
+m.render(loop, m('.loader'))
+
+m.request({
+	method: 'POST',
+	url: '/ajax.panel.mod/select',
+	body: {
+		cors: 1,
+		id: targetID
+	}
+})
+.then(res => {
+
+	item = res.data
+	m.render(loop, [
+
+		m('.subtitle', [
+			m('a', {onclick: () => getData()}, 'Role'),
+			m.trust(' &raquo; Edit')
+		]),
+
+		m('form', {onsubmit: () => submitEdit(targetID)},
+		[
+			m('label[for=inputName]', 'Name*: (max. 20)'),
+			m('input#inputName', {placeholder: 'Writter', value: item.name}),
+
+			m('label[for=inputDesc]', 'Description:'),
+			m('textarea#inputDesc', {placeholder: 'Only write post.', rows: 3, value: item.description}),
+
+			m('label', 'Permissions:'),
+
+			m('div', [
+				m('input[type=checkbox]#inputPostCreate', {value: item.post_create}),
+				m('label[for=inputPostCreate].clear', 'Post (Create)'),
+				m('br'),
+				m('input[type=checkbox]#inputPostEdit', {value: item.post_edit}),
+				m('label[for=inputPostEdit].clear', 'Post (Edit)'),
+				m('br'),
+				m('input[type=checkbox]#inputPostDelete', {value: item.post_delete}),
+				m('label[for=inputPostDelete].clear', 'Post (Delete)'),
+			]),
+
+			m('br'),
+
+			m('div', [
+				m('input[type=checkbox]#inputCommentEdit', {value: item.comment_edit}),
+				m('label[for=inputCommentEdit].clear', 'Comment (Edit)'),
+				m('br'),
+				m('input[type=checkbox]#inputCommentDelete', {value: item.comment_delete}),
+				m('label[for=inputCommentDelete].clear', 'Comment (Delete)'),
+				m('br'),
+				m('input[type=checkbox]#inputCommentApprove', {value: item.comment_approve}),
+				m('label[for=inputCommentApprove].clear', 'Comment (Approve)'),
+			]),
+
+			m('br'),
+
+			m('div', [
+				m('input[type=checkbox]#inputCategoryCreate', {value: item.category_create}),
+				m('label[for=inputCategoryCreate].clear', 'Category (Create)'),
+				m('br'),
+				m('input[type=checkbox]#inputCategoryEdit', {value: item.category_edit}),
+				m('label[for=inputCategoryEdit].clear', 'Category (Edit)'),
+				m('br'),
+				m('input[type=checkbox]#inputCategoryDelete', {value: item.category_delete}),
+				m('label[for=inputCategoryDelete].clear', 'Category (Delete)'),
+			]),
+
+			m('br'),
+
+			m('div', [
+				m('input[type=checkbox]#inputFileCreate', {value: item.file_create}),
+				m('label[for=inputFileCreate].clear', 'File (Upload)'),
+				m('br'),
+				m('input[type=checkbox]#inputFileEdit', {value: item.file_edit}),
+				m('label[for=inputFileEdit].clear', 'File (Edit)'),
+				m('br'),
+				m('input[type=checkbox]#inputFileDelete', {value: item.file_delete}),
+				m('label[for=inputFileDelete].clear', 'File (Delete)'),
+			]),
+
+			m('br'),
+
+			m('div', [
+				m('input[type=checkbox]#inputGalleryCreate', {value: item.gallery_create}),
+				m('label[for=inputGalleryCreate].clear', 'Gallery (Upload)'),
+				m('br'),
+				m('input[type=checkbox]#inputGalleryEdit', {value: item.gallery_edit}),
+				m('label[for=inputGalleryEdit].clear', 'Gallery (Edit)'),
+				m('br'),
+				m('input[type=checkbox]#inputGalleryDelete', {value: item.gallery_delete}),
+				m('label[for=inputGalleryDelete].clear', 'Gallery (Delete)'),
+			]),
+
+			m('br'),
+
+			m('div', [
+				m('input[type=checkbox]#inputUserCreate', {value: item.user_create}),
+				m('label[for=inputUserCreate].clear', 'User (Create)'),
+				m('br'),
+				m('input[type=checkbox]#inputUserEdit', {value: item.user_edit}),
+				m('label[for=inputUserEdit].clear', 'User (Edit)'),
+				m('br'),
+				m('input[type=checkbox]#inputUserDelete', {value: item.user_delete}),
+				m('label[for=inputUserDelete].clear', 'User (Delete)'),
+			]),
+
+			m('br'),
+
+			m('div', [
+				m('input[type=checkbox]#inputSetting', {value: item.setting}),
+				m('label[for=inputSetting].clear', 'Edit Setting'),
+				m('br'),
+				m('input[type=checkbox]#inputMod', {value: item.mod}),
+				m('label[for=inputMod].clear', 'Role Management'),
+			]),
+
+			m('#result'),
+			m('button.button', 'Save'), ' ',
+			m('a.button.blue', {onclick: () => getData()}, 'Back')
+		])
+
+	])
+
+	let checkboxs = document.querySelectorAll('input[type=checkbox]')
+	for (var i =0; i < checkboxs.length; i++) {
+		checkboxs[i].checked = checkboxs[i].value > 0 ? true: false
+		checkboxs[i].onclick = (e) => {
+			e.target.value = e.target.checked === true ? 1: 0
+		}
+	}
+
+})
+
+
+
+} // buildEditForm()
+
+
+
+let submitEdit = (targetID) => {
+	event.preventDefault()
+	m.render(result, m('div.loader'))
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.mod/edit',
+		body: {
+			cors: 1,
+			id: 				targetID,
+			name:				inputName.value,
+			description:		inputDesc.value,
+			post_create:		inputPostCreate.value,
+			post_edit:			inputPostEdit.value,
+			post_delete:		inputPostDelete.value,
+			comment_edit:		inputCommentEdit.value,
+			comment_delete:		inputCommentDelete.value,
+			comment_approve:	inputCommentApprove.value,
+			category_create:	inputCategoryCreate.value,
+			category_edit:		inputCategoryEdit.value,
+			category_delete:	inputCategoryDelete.value,
+			file_create:		inputFileCreate.value,
+			file_edit:			inputFileEdit.value,
+			file_delete:		inputFileDelete.value,
+			gallery_create:		inputGalleryCreate.value,
+			gallery_edit:		inputGalleryEdit.value,
+			gallery_delete:		inputGalleryDelete.value,
+			user_create:		inputUserCreate.value,
+			user_edit:			inputUserEdit.value,
+			user_delete:		inputUserDelete.value,
+			setting:			inputSetting.value,
+			mod:				inputMod.value
+		}
+	})
+	.then(res => {
+		if (res.error == 1)
+			m.render(result, m('div.notif.error', res.msg))
+		else
+			m.render(result, m('div.notif.success', res.msg))
+	})
+} // submitEdit()
+</script>

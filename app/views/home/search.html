@@ -1,0 +1,8 @@
+{if:$empty}
+<div class="info">No posts found, try again with different keywords.</div>
+{else:$empty}
+<div class="info">Showing <b>{$count}</b> posts with keyword "<b>{$keyword}</b>"</div>
+<article>
+	{$posts}
+</article>
+{/if:$empty}

@@ -1,0 +1,42 @@
+<form id="form" class="full">
+	<label for="user">Username: (20)</label>
+	<input type="text" id="userInput">
+	<label for="pass">Password:</label>
+	<input type="password" id="passInput">
+	<label for="passver">Password Verify:</label>
+	<input type="password" id="passverInput">
+	<button class="button">Register</button>
+	<div id="result"></div>
+</form>
+
+
+<script>
+form.onsubmit = () => {
+
+	m.render(result, m('div.loader'))
+	
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.user/register',
+		body: {
+			user: userInput.value,
+			pass: passInput.value,
+			passver: passverInput.value
+		}
+	})
+	.then(res =>
+	{
+		let notifClass = res.error == 1 ? 'error' : 'success'
+
+		
+		m.render(result, [
+			m('div.notif '+notifClass, m.trust(res.msg))
+		])
+		
+		// if (res.error == 0) window.location.href = '/panel'
+	})
+	.catch(e => console.log(e))
+
+	return false
+}
+</script>

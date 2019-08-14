@@ -1,0 +1,21 @@
+{if:$exists}
+
+<div class="info">
+	~ <b>{$category.name}</b> ~
+	<br>
+	<em>"{$category.info}"</em>
+	<br>
+	<small>({$category.posts} posts)</small>
+</div>
+
+{if:$empty}
+{else:$empty}
+<article>
+	{$posts}
+</article>
+<div class="pagination">{$pagination}</div>
+{/if:$empty}
+
+{else:$exists}
+<div class="info">Category is not exists.</div>
+{/if:$exists}

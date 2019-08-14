@@ -1,0 +1,24 @@
+<a href="/panel/galley/upload" class="button">Upload</a>
+<div id="album_list"></div>
+
+<script>
+let getData = () => {
+	m.render(album_list, m('div.loader'))
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.gallery/list',
+		body: {
+			cors: 1
+		}
+	})
+	.then(res => {
+		data = []
+		if (res.count == 0) {
+			m.render(album_list, m('div.notif.error', 'Empty'))
+		} else {
+			
+		}
+	})
+}
+getData()
+</script>

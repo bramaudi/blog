@@ -1,0 +1,375 @@
+@import url('loader.css');
+@import url('modal.css');
+
+* {
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+html {
+    overflow: scroll;
+    overflow-x: hidden;
+}
+::-webkit-scrollbar {
+    width: 0px;  /* Remove scrollbar space */
+    background: transparent;  /* Optional: just make scrollbar invisible */
+}
+
+
+a {color: teal;cursor: pointer;}
+a:visited {color: #12972f}
+
+del {text-decoration: line-through}
+
+body {
+    margin: auto;
+    padding: 0;
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+header {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    background: teal;
+    padding-right: 20px;
+    margin: 0;
+    color: white;
+}
+
+header .brand {
+    font-size: large;
+    font-weight: bold;
+    padding: 10px;
+    padding-top: 15px;
+    padding-left: 20px;
+    float: left;
+}
+
+.brand a {color: #fff}
+
+header .nav {
+    padding: 0;
+    list-style: none;
+    float: right;
+}
+
+header .nav li {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+header .nav a {
+    color: #fff
+}
+
+header::after {
+    display: block;
+    content:'';
+    clear: both;
+}
+
+.header-clear {
+    margin-top: 60px;
+}
+
+#sidebar_menu {
+    padding: 10px 10px 0 30px;
+    width: 30%;
+    float: left;
+}
+
+#wrapper {
+    width: 70%;
+    margin: 0;
+    float: right;
+    padding: 10px;
+    padding-top: 0;
+}
+
+.container {
+    margin: 10px;
+    margin-right: 5px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0px 0px 3px #eee;
+}
+
+.item {
+    margin: 10px 0;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 0px 0px 3px #eee;
+}
+
+.item span.category {
+    display: inline-block;
+    background: #dbdbdb;
+    color: #000000;
+    padding: 3.5px 5px;
+    margin-right: 5px;
+    border-radius: 3px
+}
+
+.button {
+    display: inline-block;
+    background: teal;
+    border: 1px solid teal;
+    color: #fff !important;
+    padding: 8px 10px;
+    border-radius: 4px;
+    box-shadow: 1px 1px 3px #eee;
+    font-weight: bold;
+    font-size: smaller;
+    /* margin-top: 15px; */
+    outline: none
+}
+
+.button:hover {
+    border-color: #aaa;
+    cursor: pointer;
+}
+
+.button.red {
+    background: #c55d5d;
+    border-color: #c55d5d
+}
+
+.button.blue {
+    background: #5dadc5;
+    border-color: #5dadc5
+}
+
+.button-slim {
+    padding: 3px;
+    margin: 0;
+    margin-top: 5px;
+    margin-right: 5px;
+}
+
+.subtitle {
+    background: teal;
+    color: #fff;
+    padding: 10px;
+    margin: -10px -10px 10px -10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px
+}
+.subtitle a {
+    padding: 10px;
+    background: #39aaaa;
+    color: #fff;
+    margin: -10px;
+    margin-right: 3px;
+    border-top-left-radius: 10px;
+}
+
+.menu {
+    display: block;
+    padding: 10px;
+    margin: 0 -15px;
+    color: teal !important;
+    transition: 0.2s;
+}
+
+.menu span {
+    font-size: small;
+    float: right;
+    background: #145858;
+    color: #fff;
+    padding: 2px 5px;
+    border-radius: 4px
+}
+a.menu:hover {
+    padding-left: 15px;
+    border-left: 5px solid teal;
+}
+.menu:nth-child(odd) {
+    background: #f0f0f0;
+}
+.menu:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px
+}
+.menu:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-image: 4px;
+}
+
+.menu.title {
+    font-weight: bold;
+    background: teal;
+    color: #fff !important
+}
+
+form label {
+    display: block;
+    padding: 10px 0;
+    font-weight: bold;
+}
+
+form label:first-child {
+    padding-top: 0;
+}
+
+form label small {
+    font-weight: normal;
+}
+
+form label.clear {
+    display: inline;
+    padding: 0;
+    font-weight: normal;
+}
+
+form input, form textarea {
+    display: block;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+    width: 100%;
+    max-width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0px 0px 3px #eee;
+}
+
+form input[type=checkbox] {
+    display: inline;
+    width: auto;
+    margin-top: 5px;
+}
+
+form button {
+    margin-top: 10px;
+}
+
+.form-double {
+    margin-top: 10px;
+    margin-left: -10px;
+}
+.form-double div {
+    float: left;
+    width: 50%;
+    padding-left: 10px;
+}
+.form-double::after {
+    display: table;
+    content: '';
+    clear: both
+}
+
+.pagination {
+    padding: 5px 5px 10px 10px;
+}
+
+.pagination a,
+.pagination span {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 5px 0 0 0;
+}
+
+.pagination a {
+    cursor: pointer;
+    background: teal;
+    color: #fff
+}
+
+.pagination span {
+    background: #aaa;
+}
+
+.notif {
+    padding: 10px 20px;
+    margin: 10px 0 0;
+}
+.notif.error {
+    background: #fff0f0
+}
+.notif.success {
+    background: #f0fff0
+}
+
+#trigger {
+    display: none;
+    cursor: pointer;
+}
+
+.full {
+    margin: -20px -20px -20px 0; 
+    padding: 40px 70px 20px 20px;
+    background: #fff;
+    margin-left: -42.55%;
+}
+
+@media only screen and (max-width: 500px) {
+
+    .full {
+        margin: 10px;
+        padding: 0;
+    }
+
+    #trigger {
+        display: block;
+    }
+    
+    #sidebar_menu {
+        display: none;
+        width: calc(100% - 20px);
+        margin-bottom: 10px;
+    }
+
+    #wrapper {
+        width: 100%;
+    }
+
+}
+
+@media only screen and (min-width: 500px) {
+
+    #sidebar_menu {
+        display: block !important
+    }
+
+}
+
+/* 
+@media only screen and (min-width: 635px) {
+
+    .post-container {
+        padding: 0 10px;
+        margin-top: 50px;
+    }
+    .post {
+        width: calc(50% - 20px);
+        height: 300px;
+        margin: 20px 10px 0;
+        float: left;
+    }
+    .post-title {
+        overflow: hidden;
+        max-height: 18%;
+    }
+    .post-content {
+        overflow: hidden;
+        max-height: 50%;
+        margin-bottom: 10px;
+    }
+
+}
+
+
+@media only screen and (min-width: 1000px) {
+
+    .post-container {
+        padding: 0 10px;
+        margin-top: 50px;
+    }
+    .post {
+        width: calc(33.33% - 20px);
+        margin: 20px 10px 0;
+        float: left;
+    }
+} */

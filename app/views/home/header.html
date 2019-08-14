@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>{$title}</title>
+
+	<meta name="keywords" content="{$blog.keywords}" />
+	<meta name="description" content="{$meta_description}" />
+	    
+	<link rel="stylesheet" type="text/css" media="all" href="/public/css/bujank-pekok.css">
+	<script src="/public/files/mithril.min.js"></script>
+	
+	</head>
+<body>
+
+<nav id="nav-header">
+	<button class="trigger" onclick="toggle('nav')"><span></span><span></span><span></span></button>
+	<ul class="nav-list hide" id="nav">
+		<li><a href="/">Beranda</a></li>
+		{if:$logged}
+		<li><a href="/panel">Dashboard</a></li>
+		{/if:$logged}
+			<li class="search">
+	<form id="search_form">
+			<input type="text" placeholder="Search post ..." value="{$search}" id="search_query">
+			<button>Search</button>
+		</form>
+	</li>
+	</ul>
+	<div class="shadow"></div>
+</nav>
+
+<header>
+	<!-- <img src="/public/files/lazyboy.svg" class="logo"> -->
+	<div class="title">{$blog.name}</div>
+	<p class="description">" {$blog.description}. "</p>
+	<div class="divider"><span></span></div>
+</header>

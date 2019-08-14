@@ -1,0 +1,149 @@
+<div id="app"></div>
+<div id="pagination"></div>
+
+<script src="/public/files/pagination.js"></script>
+<script>
+let getData = (getPagin) => {
+
+	m.render(app, m('div.loader'))
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.user/list/'+getPagin,
+		body: {
+			cors: 1
+		}
+	})
+	.then(res =>
+	{
+		
+		if (res.error == 1)
+			m.render(app, m('div.notif.error', res.msg))
+		else
+			data = []
+			data.push(m('.subtitle', [
+				m('a', {onclick: () => getData(1)}, 'Users')
+			]))
+		
+			res.data.map(item => {
+				let ban = item.ban == 1 ? 'del' : 'b'
+				data.push(m('.item', [
+					
+					m('div', [
+						m('span.fas.fa-user'),
+						m(ban, ' '+item.username),
+						' (',m('em', item.online),') ',
+						m('span', {style: 'float:right', class: 'category'}, item.mod)
+					]),
+
+					m('div', [
+						m('span.far.fa-calendar'),
+						' '+item.register_at
+					]),
+
+					m('button.button.button-slim.red', {
+							onclick: () => {
+								banUser(item.ban, item.id)
+							}
+					}, [m('span.fas.fa-ban', ' Ban')]),
+
+					m('a.button.button-slim.blue', {
+						onclick: () => {
+							showEditForm(item)
+							getModList()
+						}
+					}, [m('span.fas.fa-edit', ' Edit')])
+					
+				]))
+			})
+
+			m.render(app, data)
+
+			getPagination(res.pagination)
+	})
+
+}
+
+getData(1)
+
+let banUser = (currentBanStatus, itemID) => {
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.user/ban',
+		body: {
+			ban: currentBanStatus,
+			id: itemID
+		}
+	})
+	.then(res => {
+		console.log(res)
+		getData(1)
+	})
+}
+
+
+// ++++++++++ Edit ++++++++++
+
+let getModList = () => {
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.mod/list',
+		body: {
+			cors: 1
+		}
+	})
+	.then(res => {
+		data = []
+		data.push(m('option', {value: ''}, '---'))
+		res.data.map(item => {
+			data.push(m('option', {value: item.id}, item.name))
+		})
+		m.render(mod_list, m('div', m('select#inputMod', data)))
+	})
+}
+
+
+
+let showEditForm = (item) => {
+	m.render(pagination, '')
+	m.render(app, m('form', {
+		onsubmit: () => editAction()
+	},
+	[
+		m('.subtitle', [
+			m('a', {onclick: () => getData(1)}, 'Users'),
+			m.trust(' &raquo; Edit <b>'+item.username+'</b>')
+		]),
+
+		m('.notif.error', 'Becareful, downgrade your own role are possible here.'),
+		m('div', {style: 'margin: 10px 0 -10px 0'},'Current role: '+item.mod),
+
+		m('label', {for: 'inputMod'}),
+		m('#mod_list'),
+		m('input[type=hidden]#targetID', {value: item.id}),
+		m('#result'),
+		m('button.button', 'Save'),
+		m.trust(' '),
+		m('button.button.blue', {onclick: () => getData(1)}, 'Back'),
+	]))
+}
+
+
+let editAction = () => {
+	event.preventDefault()
+	m.render(result, m('div.loader'))
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.user/edit_mod',
+		body: {
+			mod: inputMod.value,
+			target: targetID.value
+		}
+	})
+	.then(res => {
+		console.log(res.debug);
+		
+		className = res.error == 1 ? '.error': '.success'
+		m.render(result, m('div.notif'+className, res.msg))
+	})
+}
+</script>

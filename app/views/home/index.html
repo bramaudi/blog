@@ -1,0 +1,10 @@
+{if:$empty}
+<div class="info">There is no post yet.</div>
+{else:$empty}
+<article>
+	{$posts}
+</article>
+<div class="pagination">
+	{$pagination}
+</div>
+{/if:$empty}

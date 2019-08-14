@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{$title}</title>
+    <link rel="stylesheet" href="/public/css/stylesheet.css">
+    <link rel="stylesheet" href="/public/css/fa/all.min.css">
+    <script src="/public/files/mithril.min.js"></script>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <a href="/">{$blog.name}</a>
+        </div>
+        <nav>
+            <ul class="nav">
+                {if:$logged}
+                <li><a id="trigger" title="Dashboard"><span class="fas fa-tachometer-alt"></span></a></li>
+                <li><a href="/panel/logout" title="Logout"><span class="fas fa-sign-out-alt"></span></a></li>
+                {else:$logged}
+                <li><a href="/panel/login" title="Login"><span class="fas fa-sign-in-alt"></span> Login</a></li>
+                {/if:$logged}
+            </ul>
+        </nav>
+    </header>
+
+    <div class="header-clear"></div>
+
+    {if:$logged2}
+    <script>
+    trigger.onclick = () => {
+        let smd = sidebar_menu.style.display
+        sidebar_menu.style.display = smd == 'block' ? 'none': 'block'
+    }
+    </script>
+
+    <div id="sidebar_menu">
+        <div class="menu title">Profile</div>
+        <a href="/panel/profile" class="menu">My Info</a>
+        <a href="/panel/profile/edit" class="menu">Edit Profile</a>
+        <div class="menu title">Blog</div>
+        <a href="/panel/posts" class="menu">Posts <span>{$posts}</span></a>
+        <a href="/panel/category" class="menu">Categories <span>{$categories}</span></a>
+        <!-- <a href="/panel/gallery" class="menu">Gallery <span>{$gallery}</span></a> -->
+        <a href="/panel/mod" class="menu">Role <span>{$mod}</span></a>
+        <a href="/panel/users" class="menu">Users <span title="Total: {$users.total} | +{$users.week} new this week.">{$users.total} / +{$users.week}</span></a>
+        <a href="/panel/setting" class="menu">Settings</a>
+    </div>
+    {/if:$logged2}
+
+    <div id="wrapper">
+        <div class="container">

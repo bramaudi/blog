@@ -1,0 +1,13 @@
+{loop:$post}
+<div class="post">
+	<div class="time">{$post[].date}</div>
+	<div class="category">{$post[].category}</div>
+	<h2 class="title">{$post[].title}</h2>
+	<div class="content">
+		<p>{$post[].summary}</p>
+		<br>
+		[ <a href="/{$post[].slug}">Read more &raquo;</a> ]
+		<a href="/{$post[].slug}#comments" class="comment-link">0 Responds</a>
+	</div>
+</div>
+{/loop:$post}

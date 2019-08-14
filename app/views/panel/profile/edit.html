@@ -1,0 +1,24 @@
+<form id="form">
+	<label for="inputName">Name: (20)</label>
+	<input id="inputName" value="{$name}">
+	<div id="result"></div>
+	<button class="button">Save</button>
+</form>
+
+<script>
+form.onsubmit = (e) => {
+	e.preventDefault()
+	m.render(result, m('div.loader'))
+	m.request({
+		method: 'POST',
+		url: '/ajax.panel.user/edit',
+		body: {
+			name: inputName.value
+		}
+	})
+	.then(res =>{
+		let className = res.error == 1 ? 'error': 'success'
+		m.render(result, m('div', {class: 'notif '+className}, res.msg))
+	})
+}
+</script>

@@ -1,0 +1,518 @@
+<div id="searchForm"></div>
+<div id="loop"></div>
+<div id="pagination"></div>
+
+<script src="/public/files/pagination.js"></script>
+<script>
+	let buildSearchForm = () => {
+		m.render(searchForm, [
+			m('.subtitle', [
+				m('a', { onclick: () => getData(1) }, 'Posts')
+			]),
+			m('form', { onsubmit: () => formSearch() }, [
+				m('label', { for: 'searchQuery' }, 'Search posts:'),
+				m('input[type=text]#searchQuery', { placeholder: 'Enter keywords' }),
+				m('button.button', [
+					m('span.fas.fa-search'), ' Search'
+				]), ' ',
+				m('button[type=reset].button.red', { onclick: () => getData(1) }, [
+					m('span.fas.fa-times'), ' Clear'
+				])
+			]), m('br')
+		])
+	}
+
+
+	let removeSearchForm = () => {
+		m.render(searchForm, '')
+	}
+
+
+	let getData = (getPagin) => {
+		m.render(pagination, '')
+		m.render(loop, m('div.loader'))
+
+		m.request({
+			method: 'POST',
+			url: '/ajax.panel.posts/list/' + getPagin
+		})
+			.then(res => {
+
+				let data = []
+
+				// Add write button
+				data.push(m('a.button', {
+					onclick: () => createWriteForm()
+				}, [
+						m('span.fas.fa-pen'), ' Write'
+					]))
+
+				if (res.empty == 1) {
+					m.render(loop, m('div.notif.error', 'Empty'))
+				} else {
+					getPagination(res.pagination)
+					res.data.map(item => {
+						let status = item.status == 1 ? '(Published)' : '(Draft)'
+
+						let getCategory = (postID, categoryID) => {
+							m.request({
+								method: 'POST',
+								url: '/ajax.panel.category/select',
+								body: {
+									id: categoryID
+								}
+							})
+								.then(res => {
+									let data = []
+									let data2 = []
+									if (res.empty == 1) {
+										data.push('-')
+									} else {
+										res.data.map(item => {
+											data.push(item.name)
+										})
+										data.map(x => {
+											data2.push(m('span.category', x))
+										})
+									}
+									m.render(document.getElementById('category_' + postID), data2)
+								})
+								.catch(err => console.log('Category Error:', err))
+						}
+
+						getCategory(item.id, item.category_id)
+
+						data.push(m('div.item', [
+							m('b', item.title),
+							m('small', ' ' + status),
+							m('div', { style: 'margin: 5px 0' }, [
+								m('span.far.fa-calendar'), ' - ', item.created_time
+							]),
+							m('span.fas.fa-tags'), ' ',
+							m('span#category_' + item.id, m.trust('&#183;&#183;&#183;&#183;&#183;')),
+							m('div.inline-panel', [
+								m('a.button.button-slim.blue', { onclick: () => createEditForm(item.id) }, [m('span.fas.fa-edit'), ' Edit']),
+								m('a.button.button-slim.red', { href: '#modal__' + item.id }, [m('span.fas.fa-times'), ' Delete'])
+							]),
+							m(createModal, { modalID: item.id })
+						]))
+					})
+
+					m.render(loop, data)
+					buildSearchForm()
+
+				}
+			})
+			.catch(err => console.log(err))
+	}
+
+
+	getData(1)
+
+
+
+
+	let formSearch = () => {
+		event.preventDefault()
+		m.render(pagination, '')
+		if (searchQuery.value == '') {
+			getData(1)
+			return false
+		}
+		m.render(loop, m('div.loader'))
+		m.request({
+			method: 'POST',
+			url: '/ajax.posts',
+			body: {
+				keywords: searchQuery.value,
+				public: 0
+			}
+		})
+			.then(res => {
+				console.log(res)
+				let data = []
+				if (res.count == 0) {
+					m.render(loop, m('div.notif.error', 'Empty'))
+				} else {
+					res.data.map(item => {
+						let status = item.status == 1 ? '(Published)' : '(Draft)'
+
+						let getCategory = (postID, categoryID) => {
+							m.request({
+								method: 'POST',
+								url: '/ajax.panel.category/select',
+								body: {
+									id: categoryID
+								}
+							})
+								.then(res => {
+									let data = []
+									let data2 = []
+									if (res.empty == 1) {
+										data.push('-')
+									} else {
+										res.data.map(item => {
+											data.push(item.name)
+										})
+										data.map(x => {
+											data2.push(m('span.category', x))
+										})
+									}
+									m.render(document.getElementById('category_' + postID), data2)
+								})
+								.catch(err => console.log('Category Error:', err))
+						}
+
+						getCategory(item.id, item.category_id)
+
+						data.push(m('div.item', [
+							m('b', item.title),
+							m('small', ' ' + status),
+							m('div', { style: 'margin: 5px 0' }, [
+								m('span.far.fa-calendar'), ' - ', item.created_time
+							]),
+							m('span.fas.fa-tags'), ' ',
+							m('span#category_' + item.id, m.trust('&#183;&#183;&#183;&#183;&#183;')),
+							m('div.inline-panel', [
+								m('a.button.button-slim.blue', { onclick: () => createEditForm(item.id) }, [m('span.fas.fa-edit'), ' Edit']),
+								m('a.button.button-slim.red', { href: '#modal__' + item.id }, [m('span.fas.fa-times'), ' Delete'])
+							]),
+							m(createModal, { modalID: item.id })
+						]))
+					})
+
+					m.render(loop, data)
+				}
+			})
+	}
+
+
+
+
+
+	let postDelete = (postID) => {
+
+		window.location.href = '#'
+		m.request({
+			method: 'POST',
+			url: '/ajax.panel.posts/delete',
+			body: {
+				id: postID
+			}
+		})
+			.then(res => {
+				getData(1)
+			})
+			.catch(err => console.log(err))
+
+	}
+
+	let createModal = {
+
+		view: function (vnode) {
+			return m('div.modal-window', { id: 'modal__' + vnode.attrs.modalID }, [
+				m('div', [
+					m('a.modal-close', {
+						href: '#',
+						title: 'Close'
+					}, m.trust('&times;')),
+					m('h1', 'Delete Posts'),
+					m('div', 'Are you sure want to delete this posts?'),
+					m('div', m('button.button.red', {
+						onclick: () => {
+							postDelete(vnode.attrs.modalID)
+						}
+					}, 'Yes, delete anyway!'))
+				])
+			]);
+		}
+
+	}
+
+
+
+
+
+	const createEditForm = (post_id) => {
+
+		removeSearchForm()
+		m.render(pagination, '')
+		m.render(loop,
+			[
+				m('.subtitle', [
+					m('a', { onclick: () => getData(1) }, 'Posts'),
+					m.trust(' &raquo; Edit post')
+				]),
+
+				m('form', { onsubmit: () => editForm(post_id) }, [
+					m('label', { for: 'postTitle' }, [
+						'Title*: ', m('small', '(max. 160)')
+					]),
+					m('input#postTitle', { placeholder: 'Hello World!' }),
+
+
+					m('label', { for: 'postSlug' }, [
+						'Slug: ', m('small', '(max. 160)')
+					]),
+					m('input#postSlug', { placeholder: 'hello-world' }),
+
+
+					m('label', { for: 'postText' }, 'Text:'),
+					m('textarea#postText', { rows: 15 }),
+
+
+					m('label', 'Category:'),
+					m('#getCategory'),
+					m('br'),
+
+
+					m('label', { for: 'postTag' }, [
+						'Tags: ', m('small', '(max. 255)')
+					]),
+					m('input#postTag', { placeholder: 'stiry,images,me' }),
+
+
+					m('label', 'Status:'),
+					m('input[type=checkbox]#postStatus', { value: 0 }),
+					m('label.clear', { for: 'postStatus' }, 'Save as draft.'),
+
+
+					m('#result'),
+					m('button.button', 'Save'),
+					' ',
+					m('button[type=button].button.blue', { onclick: () => getData(1) }, 'Back')
+				])
+			])
+
+		// Get current data
+		m.request({
+			method: 'POST',
+			url: '/ajax.panel.posts/select',
+			body: {
+				id: post_id
+			}
+		})
+			.then(res => {
+
+				postTitle.value = res.data.title
+				postSlug.value = res.data.slug
+				postText.value = res.data.text
+				postTag.value = res.data.tags
+				postStatus.value = res.data.status
+				postStatus.checked = res.data.status == 0 ? true : false
+				getCategoryEditForm(res.data.category_id)
+
+			})
+
+
+		postStatus.onclick = (e) => {
+			postStatus.value = e.target.checked ? 0 : 1
+		}
+
+
+
+		let getCategoryEditForm = (currCategory) => {
+			m.request({
+				method: 'GET',
+				url: '/ajax.panel.category/list'
+			})
+				.then(res => {
+					let data = []
+					if (res.empty == 0) {
+						res.data.map(item => {
+							// let currCategory = '{$post.category_id}'
+							let checkedValue = currCategory.split(',').indexOf(item.id) !== -1 ? 1 : 0
+							data.push(m('input.postCategory', {
+								checked: checkedValue,
+								value: item.id,
+								type: 'checkbox',
+								id: 'category__' + item.id
+							}), m('label.clear', {
+								for: 'category__' + item.id
+							}, item.name), m('br'))
+						})
+						m.render(getCategory, data)
+					} else {
+						m.render(getCategory, m('input.postCategory', {
+							value: 1,
+							type: 'checkbox',
+							checked: true,
+							disabled: true
+						}), m('label.clear', 'Uncategorized'))
+					}
+				})
+				.catch(err => console.log(err))
+		}
+
+
+
+	}
+
+
+
+
+	let editForm = (post_id) => {
+
+		event.preventDefault()
+		m.render(result, m('div.loader'))
+
+		let cats = []
+		let categories = document.getElementsByClassName('postCategory')
+		for (let i = 0; categories[i]; i++) {
+			if (categories[i].checked) {
+				cats.push(categories[i].value)
+			}
+		}
+
+		m.request({
+			method: 'POST',
+			url: '/ajax.panel.posts/edit',
+			body: {
+				id: post_id,
+				title: postTitle.value,
+				slug: postSlug.value,
+				text: postText.value,
+				category: cats.join(','),
+				tags: postTag.value,
+				status: postStatus.value
+			}
+		})
+			.then(res => {
+				let notifClass = res.error == 1 ? 'error' : 'success'
+				m.render(result, m('div', { class: 'notif ' + notifClass }, res.msg))
+			})
+			.catch(err => console.log(err))
+
+	}
+
+
+
+
+
+
+
+
+
+	const createWriteForm = () => {
+
+		removeSearchForm()
+		m.render(pagination, '')
+		m.render(loop,
+			[
+				m('.subtitle', [
+					m('a', { onclick: () => getData(1) }, 'Posts'),
+					m.trust(' &raquo; Write post')
+				]),
+
+				m('form', { onsubmit: () => writeForm() }, [
+					m('label', { for: 'postTitle' }, [
+						'Title*: ', m('small', '(max. 160)')
+					]),
+					m('input#postTitle', { placeholder: 'Hello World!' }),
+
+
+					m('label', { for: 'postSlug' }, [
+						'Slug: ', m('small', '(max. 160)')
+					]),
+					m('input#postSlug', { placeholder: 'hello-world' }),
+
+
+					m('label', { for: 'postText' }, 'Text:'),
+					m('textarea#postText', { rows: 15 }),
+
+
+					m('label', 'Category:'),
+					m('#getCategory'),
+					m('br'),
+
+
+					m('label', { for: 'postTag' }, [
+						'Tags: ', m('small', '(max. 255)')
+					]),
+					m('input#postTag', { placeholder: 'stiry,images,me' }),
+
+
+					m('label', 'Status:'),
+					m('input[type=checkbox]#postStatus', { value: 0 }),
+					m('label.clear', { for: 'postStatus' }, 'Save as draft.'),
+
+
+					m('#result'),
+					m('button.button', 'Save')
+				])
+			])
+
+
+		m.request({
+			method: 'GET',
+			url: '/ajax.panel.category/list'
+		})
+			.then(res => {
+				let data = []
+				if (res.empty == 0) {
+					res.data.map(item => {
+						let currCategory = '{$post.category_id}'
+						let checkedValue = currCategory.split(',').indexOf(item.id) !== -1 ? 1 : 0
+						data.push(m('input.postCategory', {
+							checked: checkedValue,
+							value: item.id,
+							type: 'checkbox',
+							id: 'category__' + item.id
+						}), m('label.clear', {
+							for: 'category__' + item.id
+						}, item.name), m('br'))
+					})
+					m.render(getCategory, data)
+				} else {
+					m.render(getCategory, m('input.postCategory', {
+						value: 1,
+						type: 'checkbox',
+						checked: true,
+						disabled: true
+					}), m('label.clear', 'Uncategorized'))
+				}
+			})
+			.catch(err => console.log(err))
+
+		postStatus.checked = postStatus.value == '1' ? 0 : 1
+		postStatus.onclick = (e) => {
+			postStatus.value = e.target.checked ? 0 : 1
+		}
+
+	}
+
+
+
+	let writeForm = () => {
+
+		event.preventDefault()
+		m.render(result, m('div.loader'))
+
+		let cats = []
+		let categories = document.getElementsByClassName('postCategory')
+		for (let i = 0; categories[i]; i++) {
+			if (categories[i].checked) {
+				cats.push(categories[i].value)
+			}
+		}
+
+		m.request({
+			method: 'POST',
+			url: '/ajax.panel.posts/create',
+			body: {
+				title: postTitle.value,
+				slug: postSlug.value,
+				text: postText.value,
+				category: cats.join(','),
+				tags: postTag.value,
+				status: postStatus.value
+			}
+		})
+			.then(res => {
+				let notifClass = res.error == 1 ? 'error' : 'success'
+				m.render(result, m('div', { class: 'notif ' + notifClass }, res.msg))
+			})
+			.catch(err => console.log(err))
+
+	}
+</script>
