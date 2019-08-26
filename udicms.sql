@@ -171,7 +171,7 @@ CREATE TABLE `tb_settings` (
 
 LOCK TABLES `tb_settings` WRITE;
 /*!40000 ALTER TABLE `tb_settings` DISABLE KEYS */;
-INSERT INTO `tb_settings` VALUES (1,'UdiCMS','udicms,blog,cms,php','Just Another Blog',5,0,0,1);
+INSERT INTO `tb_settings` VALUES (1,'UdiCMS','udicms,blog,cms,php','Just Another Blog',5,0,1,1);
 /*!40000 ALTER TABLE `tb_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
