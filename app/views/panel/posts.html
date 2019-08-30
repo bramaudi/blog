@@ -41,6 +41,7 @@
 				let data = []
 
 				// Add write button
+				buildSearchForm()
 				data.push(m('a.button', {
 					onclick: () => createWriteForm()
 				}, [
@@ -48,7 +49,8 @@
 					]))
 
 				if (res.empty == 1) {
-					m.render(loop, m('div.notif.error', 'Empty'))
+					data.push(m('div.notif.error', 'There is no post.'))
+					m.render(loop, data)
 				} else {
 					getPagination(res.pagination)
 					res.data.map(item => {
@@ -99,7 +101,6 @@
 					})
 
 					m.render(loop, data)
-					buildSearchForm()
 
 				}
 			})
