@@ -24,7 +24,7 @@ del {text-decoration: line-through}
 body {
     margin: auto;
     padding: 0;
-    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    font-family: sans-serif
 }
 
 header {
